@@ -9,13 +9,16 @@ ENV DOCROOT /var/www/html
 
 # Copy our build context to a temporary location.
 ADD ./ $GH_ROOT
+WORKDIR $GH_ROOT
 
 RUN \ 
   apt-get update -q && \
   apt-get install -qy apache2 && \
-  rsync -av --exclude-from docker/config/excludes.txt $GH_ROOT/ $DOCROOT/
-  
-CMD ["apache2ctl -DFOREGROUND"]
+  rsync -av --exclude-from docker/config/excludes.txt $GH_ROOT/ $DOCROOT/ && \
+  rm $DOCROOT/index.html
+
+EXPOSE 80  
+CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
  
 
   
